@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAN漫剪团 - 专业代剪服务</title>
+    <style>
+        :root {
+            --gold: #FFD700;
+            --dark-blue: #0F2D5A;
+            --light-blue: #1E90FF;
+            --cream: #FFF8E1;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--gold) 50%, var(--light-blue) 100%);
+            color: var(--dark-blue);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: rgba(15, 45, 90, 0.9);
+            color: var(--gold);
+            padding: 20px 0;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo span {
+            color: var(--light-blue);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        nav ul li a:hover {
+            background-color: var(--gold);
+            color: var(--dark-blue);
+        }
+        
+        /* 购物车按钮样式 */
+        .cart-btn {
+            position: relative;
+            background-color: var(--gold);
+            color: var(--dark-blue);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-btn:hover {
+            background-color: #ffcc00;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--light-blue);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* 购物车侧边栏 */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .cart-sidebar.active {
+            right: 0;
+        }
+        
+        .cart-header {
+            background-color: var(--dark-blue);
+            color: var(--gold);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .cart-items {
+            padding: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .remove-item {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .cart-total {
+            padding: 20px;
+            border-top: 2px solid var(--dark-blue);
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .cart-actions {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--light-blue);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-gold {
+            background-color: var(--gold);
+            color: var(--dark-blue);
+        }
+        
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .service-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-img {
+            height: 200px;
+            background-color: var(--light-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .service-content {
+            padding: 25px;
+        }
+        
+        .service-content h3 {
+            margin-top: 0;
+            color: var(--dark-blue);
+        }
+        
+        .service-content p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 15px 0;
+        }
+        
+        .order-form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+        }
+        
+        .order-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark-blue);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--light-blue);
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        footer {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .footer-section p, 
+        .footer-section a {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .footer-section a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: var(--gold);
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background-color: var(--gold);
+            color: var(--dark-blue);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 20px;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0 10px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .cart-sidebar.active {
+                right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">MAN<span>代剪</span>手机点单横屏观看</div>
+            <nav>
+                <ul>
+                    <li><a href="#services">服务项目</a></li>
+                    <li><a href="#order">立即下单</a></li>
+                    <li><a href="#about">关于我们</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                    <li>
+                        <button class="cart-btn" id="cart-toggle">
+                            🛒 购物车
+                            <span class="cart-count" id="cart-count">0</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- 购物车侧边栏 -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>我的购物车</h3>
+            <button class="close-cart" id="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- 购物车商品将在这里动态添加 -->
+            <p class="empty-cart-message">购物车是空的</p>
+        </div>
+        <div class="cart-total">
+            <span>总计:</span>
+            <span id="cart-total">¥0</span>
+        </div>
+        <div class="cart-actions">
+            <button class="btn" id="checkout-btn">去结算</button>
+            <button class="btn btn-gold" id="continue-shopping">继续购物</button>
+        </div>
+    </div>
+    
+    <!-- 购物车遮罩层 -->
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="container">
+        <section class="hero">
+            <h1>专业动漫视频剪辑服务</h1>
+            <p>我们提供高质量的动漫视频剪辑、混剪、AMV制作服务，让您的创意想法通过专业剪辑师的巧手变为现实。无论是个人作品还是商业项目，我们都能满足您的需求。</p>
+            <a href="#order" class="btn btn-gold">立即下单</a>
+        </section>
+        
+        <section id="services" class="services">
+            <div class="service-card">
+                <div class="service-img"><img src="888.png"/></div>
+                <div class="service-content">
+                    <h3>游戏剪辑</h3>
+                    <p>专业的动漫音乐视频制作，精选音乐与画面的完美结合，打造令人难忘的视听体验。</p>
+                    <div class="price">¥20起</div>
+                    <button class="btn add-to-cart" data-id="1" data-name="AMV制作" data-price="20">加入购物车</button>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-img"><img src="888.png"/></div>
+                <div class="service-content">
+                    <h3>动漫混剪</h3>
+                    <p>多部动漫的精彩片段融合，创造独特的风格和节奏，适合宣传或活动使用。</p>
+                    <div class="price">¥10起</div>
+                    <button class="btn add-to-cart" data-id="2" data-name="动漫混剪" data-price="10">加入购物车</button>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-img"><img src="888.png"/></div>
+                <div class="service-content">
+                    <h3>如有其他疑问点击联系客服</h3>
+                    <p>注：联系客服1下方填写好信息2点击提交订单3根据提示来来做。</p>
+                    <div class="price">¥0起</div>
+                    <button class="btn add-to-cart" data-id="3" data-name="特效剪辑" data-price="300">加入购物车</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="order" class="order-form">
+            <h2>点单表单</h2>
+            <form id="order-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">您的姓名</label>
+                        <input type="text" id="name" placeholder="请输入您的姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">电子邮箱</label>
+                        <input type="email" id="email" placeholder="请输入您的邮箱" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="service">选择服务类型</label>
+                    <select id="service" required>
+                        <option value="">-- 请选择服务 --</option>
+                        <option value="amv">游戏剪辑</option>
+                        <option value="mix">动漫混剪</option>
+                        <option value="effect">特效剪辑</option>
+                        <option value="custom">定制服务/联系客服</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="source">素材来源（动漫名称/链接）</label>
+                    <input type="text" id="source" placeholder="请提供您希望使用的动漫素材信息" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="music">音乐选择（可选）</label>
+                    <input type="text" id="music" placeholder="如果您有特定的音乐需求，请在此注明">
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">期望视频时长（秒）</label>
+                    <input type="number" id="duration" placeholder="例如：360" min="10" max="300">
+                </div>
+                
+                <div class="form-group">
+                    <label for="style">期望的风格</label>
+                    <textarea id="style" rows="3" placeholder="请描述您希望视频呈现的风格、情绪或特殊要求"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deadline">期望完成时间</label>
+                    <input type="date" id="deadline" required>
+                </div>
+                
+                <div class="file:///C:/Users/Vv110/OneDrive/%E6%A1%8C%E9%9D%A2/MAN/1.html" style="text-align: center;">
+                    <button type="submit" class="btn btn-gold" style="padding: 15px 40px; font-size: 1.1rem;">提交订单点击下方订单</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="file:///C:/Users/Vv110/OneDrive/%E6%A1%8C%E9%9D%A2/MAN/1.html">
+            <div class="footer-section" id="about">
+                <h3>关于MAN漫剪</h3>
+                <p>我们是一支由资深动漫爱好者和专业剪辑师组成的团队，致力于为动漫社区提供高质量的剪辑服务。</p>
+            </div>
+            
+            <div class="footer-section" id="contact">
+                <h3>联系我们</h3>
+                <a href="MAN漫剪团@gzf - gaozhuofeng@qq.com">gaozhuofeng@qq.com</a>
+                <a href="tel:+8613812345678">+86 138 1234 5678</a>
+                <p>工作时间：周一至周六 早上10:00-晚上9:00</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>关注我们-提交订单后点击订单</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="哔哩哔哩">B站</a>
+                    <a href="#" aria-label="抖音">抖音</a>
+                    <a href="#" aria-label="微信">微信</a>
+                    <a href="#" aria-label="QQ">QQ</a>
+                   <a href="#" aria-label="小红书">小红书</a>
+                   <a href="file:///C:/Users/Vv110/OneDrive/%E6%A1%8C%E9%9D%A2/MAN/1.html" aria-label="订单">订单</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 MAN漫剪团 版权所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 购物车功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            // 购物车数据
+            let cart = [];
+            
+            // DOM元素
+            const cartToggle = document.getElementById('cart-toggle');
+            const closeCart = document.getElementById('close-cart');
+            const cartSidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('overlay');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            const addToCartButtons = document.querySelectorAll('.add-to-cart');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const continueShoppingBtn = document.getElementById('continue-shopping');
+            const orderForm = document.getElementById('order-form');
+            
+            // 打开购物车
+            cartToggle.addEventListener('click', toggleCart);
+            closeCart.addEventListener('click', toggleCart);
+            overlay.addEventListener('click', toggleCart);
+            continueShoppingBtn.addEventListener('click', toggleCart);
+            
+            // 添加商品到购物车
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', addToCart);
+            });
+            
+            // 结算按钮
+            checkoutBtn.addEventListener('click', checkout);
+            
+            // 表单提交
+            orderForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('订单已提交！扫一扫联系客服代剪注：不联系做不了。');
+                this.reset();
+            });
+            
+            // 切换购物车显示/隐藏
+            function toggleCart() {
+                cartSidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+                updateCartDisplay();
+            }
+            
+            // 添加商品到购物车
+            function addToCart(e) {
+                const button = e.target;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const price = parseFloat(button.getAttribute('data-price'));
+                
+                // 检查是否已经在购物车中
+                const existingItem = cart.find(item => item.id === id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id,
+                        name,
+                        price,
+                        quantity: 1
+                    });
+                }
+                
+                // 更新购物车显示
+                updateCartDisplay();
+                
+                // 显示添加成功反馈
+                button.textContent = '已添加';
+                button.style.backgroundColor = '#4CAF50';
+                setTimeout(() => {
+                    button.textContent = '加入购物车';
+                    button.style.backgroundColor = '';
+                }, 1000);
+            }
+            
+            // 更新购物车显示
+            function updateCartDisplay() {
+                // 更新商品数量
+                const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+                cartCount.textContent = totalItems;
+                
+                // 更新购物车内容
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p class="empty-cart-message">购物车是空的</p>';
+                } else {
+                    cartItemsContainer.innerHTML = '';
+                    cart.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'cart-item';
+                        itemElement.innerHTML = `
+                            <div class="cart-item-info">
+                                <div class="cart-item-title">${item.name}</div>
+                                <div class="cart-item-price">¥${item.price} × ${item.quantity}</div>
+                            </div>
+                            <button class="remove-item" data-id="${item.id}">×</button>
+                        `;
+                        cartItemsContainer.appendChild(itemElement);
+                    });
+                    
+                    // 添加删除按钮事件
+                    document.querySelectorAll('.remove-item').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const id = this.getAttribute('data-id');
+                            removeFromCart(id);
+                        });
+                    });
+                }
+                
+                // 更新总价
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                cartTotal.textContent = `¥${total}`;
+            }
+            
+            // 从购物车移除商品
+            function removeFromCart(id) {
+                cart = cart.filter(item => item.id !== id);
+                updateCartDisplay();
+            }
+            
+            // 结算功能<a href="file:///C:/Users/Vv110/OneDrive/%E6%A1%8C%E9%9D%A2/MAN/1.html"> 结算</A>
+            function checkout() {
+                if (cart.length === 0) {
+                    alert('您的购物车是空的，请先添加商品');
+                    return;
+                }
+                
+                // 这里可以添加实际的结算逻辑，比如跳转到支付页面
+                alert(`即将跳转到支付页面，总金额: ${cartTotal.textContent}`);
+                
+                // 清空购物车
+                cart = [];
+                updateCartDisplay();
+                toggleCart();
+            }
+        });
+    </script>
+</body>
+</html>
